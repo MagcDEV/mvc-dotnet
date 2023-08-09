@@ -43,6 +43,7 @@ namespace mvc_dotnet.Controllers
             {
                 _dbContext.Categories.Add(category);
                 _dbContext.SaveChanges();
+                TempData["success"] = "Category added successfully";
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -81,6 +82,7 @@ namespace mvc_dotnet.Controllers
             {
                 _dbContext.Categories.Update(category);
                 _dbContext.SaveChanges();
+                TempData["success"] = "Category updated successfully";
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -105,20 +107,23 @@ namespace mvc_dotnet.Controllers
 
         }
 
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Route("Delete")]
-        public IActionResult Delete(Category category)
+        public IActionResult DeletePost(int? id)
         {
-            if (category.Name == category.DisplayOrder.ToString())
+            var category = _dbContext.Categories.Find(id);
+
+            if (category == null)
             {
-                ModelState.AddModelError("Name", "Name and Display Order cannot be the same");
+                return NotFound();
             }
 
             if (ModelState.IsValid)
             {
                 _dbContext.Categories.Remove(category);
                 _dbContext.SaveChanges();
+                TempData["success"] = "Category deleted successfully";
                 return RedirectToAction("Index");
             }
             return View(category);
