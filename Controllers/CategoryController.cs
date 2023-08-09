@@ -28,11 +28,101 @@ namespace mvc_dotnet.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Create")]
+        public IActionResult Create(Category category)
+        {
+            if (category.Name == category.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("Name", "Name and Display Order cannot be the same");
+            }
 
-        // [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        // public IActionResult Error()
-        // {
-        //     return View("Error!");
-        // }
+
+            if (ModelState.IsValid)
+            {
+                _dbContext.Categories.Add(category);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(category);
+        }
+
+        [Route("Edit")]
+        public IActionResult Edit(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            var categoryFromDb = _dbContext.Categories.Find(id);
+
+            if (categoryFromDb == null)
+            {
+                return NotFound();
+            }
+
+            return View(categoryFromDb);
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Edit")]
+        public IActionResult Edit(Category category)
+        {
+            if (category.Name == category.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("Name", "Name and Display Order cannot be the same");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _dbContext.Categories.Update(category);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(category);
+        }
+
+        [Route("Delete")]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            var categoryFromDb = _dbContext.Categories.Find(id);
+
+            if (categoryFromDb == null)
+            {
+                return NotFound();
+            }
+
+            return View(categoryFromDb);
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Delete")]
+        public IActionResult Delete(Category category)
+        {
+            if (category.Name == category.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("Name", "Name and Display Order cannot be the same");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _dbContext.Categories.Remove(category);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(category);
+        }
+
     }
 }
